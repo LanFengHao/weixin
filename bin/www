@@ -1,0 +1,204 @@
+#!/usr/bin/env node
+
+/**
+ * Module dependencies.
+ */
+
+var app = require('../app');
+var debug = require('debug')('demo:server');
+var http = require('http');
+
+
+var MongoClient = require('mongodb').MongoClient;
+var assert = require('assert');
+var url = 'mongodb://127.0.0.1:27017/stu';
+/**
+ * Get port from environment and store in Express.
+ */
+
+var port = normalizePort(process.env.PORT || '3000');
+app.set('port', port);
+
+/**
+ * Create HTTP server.
+ */
+
+var server = http.createServer(app);
+var io = require('socket.io')(server);
+/**
+ * Listen on provided port, on all network interfaces.
+ */
+ //用户名验证
+ io.on('connection', function(socket){
+   socket.on('chat message', function(name){
+    //  console.log(name);
+
+     var findDB = function(db, callback){
+         var cursor = db.collection('wei').find({'name':name});
+         cursor.each(function(err, doc){
+             assert.equal(err, null);
+             if(doc !== null){
+                //  console.dir(doc);
+                 socket.emit('chat message', doc);
+             } else {
+                socket.emit('chat message', doc);
+                 callback();
+             }
+         });
+     };
+
+     MongoClient.connect(url, function(err, db) {
+       assert.equal(null, err);
+       console.log('Connected correctly to server.');
+
+       findDB(db, function(){
+           db.close();
+       });
+     });
+
+
+   });
+ });
+//聊天数据传输
+ io.on('connection',function (socket) {
+  //  console.log('-----');
+
+
+
+  //-----
+
+   socket.on('name hu',function (name,paw) {
+
+    var twe = setInterval(function() {
+       io.emit('name hu',name);
+     },1)
+     setTimeout(function() {
+       clearInterval(twe)
+     },10000);
+   })
+
+   socket.on('den',function(go) {
+    //  console.log(go);
+     socket.emit('den',go);
+   })
+
+//setInterval
+
+   //  setTimeout
+
+
+
+
+   socket.on('dui hua',function (data,yes) {
+    io.emit('dui hua',data,yes)
+   })
+ })
+
+
+//修改密码
+  io.on('connection',function (socket){
+    socket.on('gai mi',function (name,paw){
+      // console.log(name,paw+'11111---');
+
+      var updateDB = function(db, callback){
+          db.collection('wei').updateOne(
+              {"name": name},{ $set: { "paw": paw} },
+            function(err, results) {
+            console.log(results);
+            callback();
+        });
+      };
+
+      MongoClient.connect(url, function(err, db) {
+        assert.equal(null, err);
+        console.log('Connected correctly to server.');
+
+        updateDB(db, function(){
+            db.close();
+        });
+      });
+
+
+
+    })
+  })
+var yong = [];
+io.on('connection',function (socket) {
+  //在线用户
+  // socket.join('some room');
+  socket.on('zai xian',function (name) {
+    yong.push(name);
+
+ })
+
+})
+function shi() {
+  io.emit('zai xian',yong);
+  yong = [];
+  setTimeout(shi,3000)
+}
+shi()
+
+server.listen(port);
+server.on('error', onError);
+server.on('listening', onListening);
+
+/**
+ * Normalize a port into a number, string, or false.
+ */
+
+function normalizePort(val) {
+  var port = parseInt(val, 10);
+
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+
+  return false;
+}
+
+/**
+ * Event listener for HTTP server "error" event.
+ */
+
+function onError(error) {
+  if (error.syscall !== 'listen') {
+    throw error;
+  }
+
+  var bind = typeof port === 'string'
+    ? 'Pipe ' + port
+    : 'Port ' + port;
+
+  // handle specific listen errors with friendly messages
+  switch (error.code) {
+    case 'EACCES':
+      console.error(bind + ' requires elevated privileges');
+      process.exit(1);
+      break;
+    case 'EADDRINUSE':
+      console.error(bind + ' is already in use');
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+}
+
+/**
+ * Event listener for HTTP server "listening" event.
+ */
+
+function onListening() {
+  var addr = server.address();
+  var bind = typeof addr === 'string'
+    ? 'pipe ' + addr
+    : 'port ' + addr.port;
+  debug('Listening on ' + bind);
+}

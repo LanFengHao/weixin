@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link href="https://cdn.bootcss.com/jquery-mobile/1.4.5/jquery.mobile.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/jquery-mobile/1.4.5/jquery.mobile.min.js"></script>
+    <script src="http://cdn.bootcss.com/socket.io/2.0.3/socket.io.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>用户注册</title>
+    <style media="screen">
+      #head{
+        background-color:#65c294;
+        color: #555;
+      }
+      #foot{
+        background-color:#65c294;
+      }
+      .content{
+        padding:0 20px;
+      }
+      .logo>img{
+        display: block;
+        width: 50%;
+        margin: auto;
+      }
+      form>h4{
+        margin: 5px !important;
+        color: #555;
+      }
+      form>button{
+        margin-top: 30px !important;
+        background-color:#65c294 !important;
+        color: #555 !important;
+      }
+      .dr{
+        position: absolute;
+        bottom: 45px;
+      }
+      #ok{
+        color: #65c294;
+        display: none;
+      }
+      #err{
+        color: #f00;
+        display:none;
+      }
+      .none{
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div data-role='page'>
+       <div data-role="header" data-position="fixed" id="head"><h1>注册</h1></div>
+        <div class="content">
+          <div class="logo">
+            <img src="images/logo.png" alt="logo" />
+          </div>
+
+
+          <form class="Register" action="/zhuce_yes" method="post">
+            <h4>昵称</h4><samp id="ok" class="none">用户名可用</samp><samp id="err" class="none">用户名已被注册，不可用</samp>
+            <input type="text" name="name" value="" id="in" required pattern="^.{4,12}$" placeholder="昵称长度:4~12" autofocus>
+            <h4>密码</h4>
+            <input type="password" id='paw' name="paw" value="" required placeholder="密码长度不得小于6" pattern="^.{6,}$">
+            <h4>手机号码</h4>
+            <input id="phone" type="text" name="phone" value="" required pattern= "\d{11}" placeholder="请输入手机号码">
+            <button type="submit" name="button" id="tijiao">注册</button>
+          </form>
+          <div class="dr">
+            <span>已有帐号,</span><a href="http://localhost:3000/">登录</a>
+          </div>
+        </div>
+       <div data-role="footer" data-position="fixed" id="foot"></div>
+     </div>
+
+    <script type="text/javascript">
+    //socket.io必须要加在www中
+    //var io = require('socket.io')(server);
+    var ins = document.getElementById("in");
+    var socket = io();
+
+    $('#in').change(function() {
+      $('#err').css({'display':'none'})
+      if (12 >= ins.value.length & ins.value.length >= 4) {
+        // console.log('ll');
+        socket.emit('chat message',$('#in').val());
+      }
+    })
+      socket.on('chat message',function (name) {
+        // console.log(name);
+        if (name != null) {
+          // console.log('yes');
+          $('#err').css({'display':'block'})
+          $('#tijiao').attr({'disabled':'ture'})
+          $('#ok').css({'display':'none'})
+        }else {
+          if ($('#err').css('display') == 'none') {
+            $('#ok').css({'display':'block'})
+            $('#tijiao').removeAttr('disabled')
+          }
+        }
+      })
+
+
+    ins.onblur=function(){
+      if(ins.value){
+          ins.setCustomValidity("");//现将有输入时的提示设置为空
+      }else if(ins.validity.valueMissing){
+          ins.setCustomValidity("昵称不能为空");
+      };
+      if(ins.validity.patternMismatch){
+          ins.setCustomValidity("昵称长度4到12位");
+      }
+    };
+
+    var phone = document.getElementById("phone");
+    phone.onblur=function(){
+      if(phone.value){
+          phone.setCustomValidity("");//现将有输入时的提示设置为空
+      }else if(phone.validity.valueMissing){
+          phone.setCustomValidity("手机号码不能为空");
+      };
+      if(phone.validity.patternMismatch){
+          phone.setCustomValidity("手机号码必须为11位数字");
+      }
+    };
+
+    var paw = document.getElementById("paw");
+    paw.onblur=function(){
+      if(paw.value){
+          paw.setCustomValidity("");//现将有输入时的提示设置为空
+      }else if(paw.validity.valueMissing){
+          paw.setCustomValidity("密码不能为空");
+      };
+      if(paw.validity.patternMismatch){
+          paw.setCustomValidity("密码必须大于等于6位");
+      }
+    };
+    </script>
+  </body>
+</html>

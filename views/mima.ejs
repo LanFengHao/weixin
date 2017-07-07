@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link href="https://cdn.bootcss.com/jquery-mobile/1.4.5/jquery.mobile.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/jquery-mobile/1.4.5/jquery.mobile.min.js"></script>
+    <script src="http://cdn.bootcss.com/socket.io/2.0.3/socket.io.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>忘记密码</title>
+    <style media="screen">
+      #head{
+        background-color:#65c294;
+        color: #555;
+      }
+
+      #foot{
+        background-color:#65c294;
+      }
+      .content{
+        padding:0 20px;
+      }
+      .logo>img{
+        display: block;
+        width: 50%;
+        margin: auto;
+      }
+      form>h4{
+        margin: 5px !important;
+        color: #555;
+      }
+      form>button{
+        margin-top: 30px !important;
+        background-color:#65c294 !important;
+        color: #555 !important;
+      }
+      .dr{
+        position: absolute;
+        bottom: 50px;
+      }
+      #ok{
+        color: #f00;
+        display: none;
+      }
+      #err{
+        color: #65c294;
+        display:none;
+      }
+      #yizi{
+        color: #f00;
+        display: none;
+      }
+      .none{
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div data-role='page'>
+       <div data-role="header" data-position="fixed" id="head"><h1>忘记密码</h1></div>
+        <div class="content">
+          <div class="logo">
+            <img src="images/logo.png" alt="logo" />
+          </div>
+          <form class="Register" action="/zhuce_yes" method="post">
+            <h4>昵称</h4><samp id="err" class="none">用户密码可修改</samp><samp id="ok" class="none">用户名不存在</samp>
+            <input type="text" name="name" value="" id="in" required pattern="^.{4,12}$" placeholder="昵称长度:4~12" autofocus>
+            <samp id="yizi" class="none">密码输入不一致</samp>
+            <h4>新密码</h4>
+            <input type="password" name="paw" value="" id="paw" required placeholder="密码长度不得小于6" pattern="^.{6,}$">
+            <h4>确认密码</h4>
+            <input type="password" name="paw" value="" id="paws" required placeholder="密码长度不得小于6" pattern="^.{6,}$">
+            <button type="submit" name="button" id="but" value="更新">修改密码</button>
+          </form>
+          <div class="dr">
+            <span>想起来啦</span><a href="http://localhost:3000/">登录</a>
+          </div>
+        </div>
+       <div data-role="footer" data-position="fixed" id="foot"></div>
+     </div>
+
+  <script type="text/javascript">
+    // // $('input').change($("#but").click())
+    //
+    // $("#but").click((e) =>{
+    //   e.preventDefault()
+    //     if ($("#paw").val() == $("#paws").val()) {
+    //       console.log('mi');
+    //     }
+    //   })
+    //
+    var socket = io();
+    $('#in').change(function() {
+      $('#err').css({'display':'none'})
+      if (12 >= ins.value.length & ins.value.length >= 4) {
+        // console.log('ll');
+        socket.emit('chat message',$('#in').val());
+      }
+    })
+
+    socket.on('chat message',function (name) {
+      if (name != null) {
+        $('#but').removeAttr('disabled')
+        // console.log('yes');
+        $('#err').css({'display':'block'})
+        $('#ok').css({'display':'none'})
+      }else {
+        if ($('#err').css('display') == 'none') {
+          $('#but').attr({'disabled':'ture'})
+          $('#ok').css({'display':'block'})
+        }
+      }
+    });
+
+  $('#but').click(function () {
+    if ($('#paw').val() == $('#paws').val()) {
+      $('#but').removeAttr('disabled')
+
+      socket.emit('gai mi',$('#in').val(),$('#paw').val());
+
+      console.log('------------');
+    }else {
+      $('#but').attr({'disabled':'ture'});
+      $('#yizi').css({'display':'block'});
+      $('#paw,#paws').val('');
+    }
+  })
+  $('#paw,#paws').focus(function () {
+    $('#but').removeAttr('disabled')
+    $('#yizi').css({'display':'none'});
+  })
+
+    var ins = document.getElementById("in");
+    ins.onblur=function(){
+      if(ins.value){
+          ins.setCustomValidity("");//现将有输入时的提示设置为空
+      }else if(ins.validity.valueMissing){
+          ins.setCustomValidity("昵称不能为空");
+      };
+      if(ins.validity.patternMismatch){
+          ins.setCustomValidity("昵称长度4到12位");
+      }
+    };
+    var paw = document.getElementById("paw");
+    paw.onblur=function(){
+      if(paw.value){
+          paw.setCustomValidity("");//现将有输入时的提示设置为空
+      }else if(paw.validity.valueMissing){
+          paw.setCustomValidity("密码不能为空");
+      };
+      if(paw.validity.patternMismatch){
+          paw.setCustomValidity("密码必须大于等于6位");
+      }
+    };
+    var paws = document.getElementById("paws");
+    paws.onblur=function(){
+      if(paws.value){
+          paws.setCustomValidity("");//现将有输入时的提示设置为空
+      }else if(paws.validity.valueMissing){
+          paws.setCustomValidity("密码不能为空");
+      };
+      if(paws.validity.patternMismatch){
+          paws.setCustomValidity("密码必须大于等于6位");
+      }
+    };
+
+  </script>
+  </body>
+</html>

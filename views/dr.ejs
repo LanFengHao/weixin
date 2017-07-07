@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link href="https://cdn.bootcss.com/jquery-mobile/1.4.5/jquery.mobile.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/jquery-mobile/1.4.5/jquery.mobile.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>登录</title>
+    <style media="screen">
+      #head{
+        background-color:#65c294;
+        color: #555;
+      }
+
+      #foot{
+        background-color:#65c294;
+      }
+      .content{
+        padding:0 20px;
+      }
+      .logo>img{
+        display: block;
+        width: 50%;
+        margin: auto;
+      }
+      form>h4{
+        margin: 5px !important;
+        color: #555;
+      }
+      form>button{
+        margin-top: 30px !important;
+        background-color:#65c294 !important;
+        color: #555 !important;
+      }
+      .dr{
+        position: absolute;
+        bottom: 50px;
+      }
+      #err{
+        color: #f00;
+      }
+    </style>
+  </head>
+  <body>
+    <div data-role='page'>
+       <div data-role="header" data-position="fixed" id="head"><h1>登录</h1></div>
+        <div class="content">
+          <div class="logo">
+            <img src="images/logo.png" alt="logo" />
+          </div>
+          <form class="Register" action="/ok" method="post">
+            <h4>昵称</h4><span id='err'><%= err %></span>
+            <input type="text" name="name" value="" id="in" required pattern="^.{4,12}$" placeholder="昵称长度:4~12" autofocus>
+            <h4>密码</h4>
+            <input type="password" name="paw" value="" id="paw" required placeholder="密码长度不得小于6" pattern="^.{6,}$">
+            <button type="submit" name="button">登录</button>
+          </form>
+          <a href="http://localhost:3000/biao">在线用户列表</a>
+          <div class="dr">
+
+          <span>还没有帐号</span><a href="http://localhost:3000/zhuce" style="margin-right:150px">注册</a>
+          <a href="http://localhost:3000/mima">忘记密码</a>
+          </div>
+        </div>
+       <div data-role="footer" data-position="fixed" id="foot"></div>
+     </div>
+
+<script type="text/javascript">
+var ins = document.getElementById("in");
+ins.onblur=function(){
+  if(ins.value){
+      ins.setCustomValidity("");//现将有输入时的提示设置为空
+  }else if(ins.validity.valueMissing){
+      ins.setCustomValidity("昵称不能为空");
+  };
+  if(ins.validity.patternMismatch){
+      ins.setCustomValidity("昵称长度4到12位");
+  }
+};
+var paw = document.getElementById("paw");
+paw.onblur=function(){
+  if(paw.value){
+      paw.setCustomValidity("");//现将有输入时的提示设置为空
+  }else if(paw.validity.valueMissing){
+      paw.setCustomValidity("密码不能为空");
+  };
+  if(paw.validity.patternMismatch){
+      paw.setCustomValidity("密码必须大于等于6位");
+  }
+};
+
+</script>
+  </body>
+</html>

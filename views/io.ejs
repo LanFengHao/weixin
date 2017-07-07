@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link href="https://cdn.bootcss.com/jquery-mobile/1.4.5/jquery.mobile.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/jquery-mobile/1.4.5/jquery.mobile.min.js"></script>
+    <script src="http://cdn.bootcss.com/socket.io/2.0.3/socket.io.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>群聊天室</title>
+    <style media="screen">
+      #head{
+        background-color: #65c294;
+      }
+      #foot{
+        background-color: #65c294;
+        padding: 0 20px 0 20px;
+        box-sizing: border-box;
+      }
+      #song{
+        display: inline-block;
+        float: right;
+        margin-top: 8px;
+      }
+      li{
+        /*max-width:300px;*/
+        list-style-type: none;
+        display:flex;
+        background-color: #cde6c7;
+        padding: 10px 0;
+        border-radius: 15px;
+        /*float: right;*/
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+      .kuang{
+        display: inline-block;
+        width: 80%;
+      }
+      #duihua{
+        padding: 10px 20px 10px 20px;
+
+      }
+    </style>
+  </head>
+  <body>
+    <div data-role='page'>
+       <div data-role="header" data-position="fixed" id="head"><h4></h4></div>
+        <div class="content">
+          <ul id="duihua">
+
+          </ul>
+        </div>
+
+       <div data-role="footer" data-position="fixed" id="foot">
+         <form class="" action="/io" method="get">
+            <div class="kuang">
+              <input type="text" name="name" value="" id="kuang">
+            </div>
+            <button type="submit" name="button" id="song">发送</button>
+          </form>
+      </div>
+     </div>
+     <script type="text/javascript">
+     var socket = io();
+     $('form').submit(function(){
+      //  console.log('1111');
+       socket.emit('dui hua',$('#kuang').val(),$('#head>h4').html());
+       $('#kuang').val('');
+       return false;  //防止冒泡return false;
+     });
+    socket.on('dui hua',function (data,yes) {
+      // console.log(data);
+      // console.log(yes);
+      $('#duihua').append($('<li>').html(yes+' : '+data));
+      var can = $('li').last().text().length
+      if (yes == $('#head>h4').text()) {
+        $('li:last').css({'float': 'right','margin-left':' 300px','background-color': '#65c294'})
+      }
+      $('li:last').css({'width': can+'em'})
+    })
+    // if ($('#head>h4').html() == '') {
+      socket.on('name hu',function (name) {
+        // console.log(name);
+        // console.log(paw);
+        // console.log('1111---');
+        // console.log(name);
+        if ($('#head>h4').html() == '') {
+          socket.emit('den',name);
+        }
+      })
+    // }
+
+      socket.on('den',function (val) {
+        // console.log(val+'11111222');
+        $('#head>h4').html(val);
+      })
+
+
+    //
+
+  function shi() {
+    socket.emit('zai xian', $('#head>h4').text())
+  }
+  socket.on('zai xian',function(names) {
+    // console.log(names);
+  })
+  setTimeout(function() {
+    setInterval(shi,3000)
+  },3000)
+     </script>
+  </body>
+</html>
